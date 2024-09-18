@@ -1,82 +1,90 @@
-import { Text, View, TextInput, TouchableOpacity, ImageBackground, Button } from 'react-native';
+import { Text, View, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
 import { globalStyles } from '../styles/global.js';
 import { useState } from 'react';
-import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
-
+import { Formik } from 'formik';
+import { loginValidation } from '../validation/loginValidation'; // Import validation schema
+import { getLoginData } from '../storage/userDetails'; // Import AsyncStorage helper
+import { showSuccessToast, showErrorToast } from '../components/toast.js'; // Import toast functions
 
 const backgroundImage = { uri: 'https://images.unsplash.com/photo-1530569673472-307dc017a82d?q=80&w=1888&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' };
 
-export default function LoginScreen({navigation}) {
-  const [Username, setUsername] = useState("")
-  const [Password, setPassword] = useState("")
+export default function LoginScreen({ navigation }) {
   const [isPasswordVisible, setPasswordVisibility] = useState(false);
-
-  const showToast = () => {
-    if (Username) {
-      Toast.show({
-        type: 'success',
-        text1: 'Logined Successfully!',
-        text2: `Welcome, ${Username}! 👋`
-      });
-      // Clear inputs after successful login
-      setUsername("");
-      setPassword("");
-    } else {
-      Toast.show({
-        type: 'error',
-        text1: 'Login Failed',
-      });
-    }
-  };
 
   const togglePasswordVisibility = () => {
     setPasswordVisibility(!isPasswordVisible);
   };
-  
-  return (    
-    <ImageBackground
-      source={backgroundImage}
-      style={globalStyles.container}
-    >
-    <View>
-    <Text style={globalStyles.title}>Login</Text>
-    </View>
-    
+
+  const handleLogin = async (values) => {
+    const storedUser = await getLoginData();
+    if (storedUser && (storedUser.email === values.userNameOrEmail || storedUser.userName === values.userNameOrEmail) && storedUser.password === values.password) {
+      showSuccessToast(`Welcome, ${storedUser.firstName}! 👋`);
+      // Redirect to another screen or reset fields if needed
+    } else {
+      showErrorToast('Incorrect username/email or password');
+    }
+  };
+
+  return (
+    <ImageBackground source={backgroundImage} style={globalStyles.container}>
+      <View>
+        <Text style={globalStyles.title}>Login</Text>
+      </View>
+
       <View style={globalStyles.form}>
-      <Text style={globalStyles.inputLabel}>Username</Text>
-        <TextInput
-          style = {globalStyles.input}
-          placeholder = "Username"
-          placeholderTextColor = "#aaa"
-          value={Username}
-          onChangeText={setUsername}
-          />
+        <Formik
+          initialValues={{ userNameOrEmail: '', password: '' }}
+          validationSchema={loginValidation} // Apply validation
+          onSubmit={(values) => handleLogin(values)} // Handle login
+        >
+          {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+            <View>
+              <Text style={globalStyles.inputLabel}>Username or Email</Text>
+              <TextInput
+                style={globalStyles.input}
+                placeholder="Username or Email"
+                placeholderTextColor="#aaa"
+                value={values.userNameOrEmail}
+                onChangeText={handleChange('userNameOrEmail')}
+                onBlur={handleBlur('userNameOrEmail')}
+              />
+              {errors.userNameOrEmail && touched.userNameOrEmail && (
+                <Text style={globalStyles.errorText}>{errors.userNameOrEmail}</Text>
+              )}
 
-<Text style={globalStyles.inputLabel}>Password</Text>
-        <View style={globalStyles.passwordContainer}>
-          <TextInput
-            style={globalStyles.inputWithIcon} // Style for TextInput with icon
-            placeholder="Password"
-            placeholderTextColor="#aaa"
-            secureTextEntry={!isPasswordVisible} // Toggle visibility
-            value={Password}
-            onChangeText={setPassword}
-          />
-          <TouchableOpacity onPress={togglePasswordVisibility} style={globalStyles.eyeIcon}>
-            <Icon name={isPasswordVisible ? 'eye-off' : 'eye'} size={24} color="#aaa" />
-          </TouchableOpacity>
-        </View>
-        
-        <TouchableOpacity style={globalStyles.button} onPress={showToast}>
-          <Text style={globalStyles.buttonText}>Login</Text>
-        </TouchableOpacity>
+              <Text style={globalStyles.inputLabel}>Password</Text>
+              <View>
+                <TextInput
+                  style={globalStyles.inputWithIcon}
+                  placeholder="Password"
+                  placeholderTextColor="#aaa"
+                  secureTextEntry={!isPasswordVisible}
+                  value={values.password}
+                  onChangeText={handleChange('password')}
+                  onBlur={handleBlur('password')}
+                />
+                <TouchableOpacity onPress={togglePasswordVisibility} style={globalStyles.eyeIcon}>
+                  <Icon name={isPasswordVisible ? 'eye-off' : 'eye'} size={24} color="#aaa" />
+                </TouchableOpacity>
+              </View>
+              {errors.password && touched.password && (
+                <Text style={globalStyles.errorText}>{errors.password}</Text>
+              )}
 
-        <Text style={globalStyles.signuptext}>Don't have an account? 
-        <Text style={globalStyles.signuptext2} onPress={() => navigation.navigate("Signup")}> Sign up! </Text>
-        </Text>
+              <TouchableOpacity style={globalStyles.button} onPress={handleSubmit}>
+                <Text style={globalStyles.buttonText}>Login</Text>
+              </TouchableOpacity>
 
+              <Text style={globalStyles.signuptext}>
+                Don't have an account?{' '}
+                <Text style={globalStyles.signuptext2} onPress={() => navigation.navigate('Signup')}>
+                  Sign up!
+                </Text>
+              </Text>
+            </View>
+          )}
+        </Formik>
       </View>
     </ImageBackground>
   );
