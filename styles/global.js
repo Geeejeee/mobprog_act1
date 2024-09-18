@@ -29,11 +29,11 @@ export const globalStyles = StyleSheet.create({
     fontSize: 16,
   },
   title: {
-    fontSize: 36,
+    fontSize: 30,
     marginBottom: 24,
     fontWeight: "300",
-    color: "white",
-    textAlign: "center",
+    color: "#374B96",
+    paddingLeft: 20,
   },
   button: {
     width: "80%",
