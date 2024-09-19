@@ -1,10 +1,11 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 
 export const globalStyles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: 20,
+    alignItems: "center",
   },
   form: {
     width: "100%",
@@ -24,7 +25,6 @@ export const globalStyles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 15,
-    marginBottom: 15,
     backgroundColor: "#fff",
     fontSize: 16,
   },
@@ -64,6 +64,10 @@ export const globalStyles = StyleSheet.create({
   inputLabel: {
     marginBottom: 10,
     alignItems: "left",
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
   },
   passwordContainer: {
     position: "relative",
