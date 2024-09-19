@@ -4,12 +4,35 @@ export const globalStyles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
+    paddingTop: 40,
+    paddingBottom: 40,
     paddingHorizontal: 20,
     alignItems: "center",
   },
+  innerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    padding: 20,
+  },
+  welcomeText: {
+    fontSize: 24, 
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  logoutButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: 'navy',
+    borderRadius: 5,
+  },
+  logoutButtonText: {
+    color: 'white',
+    fontSize: 18,
+  },
   form: {
-    width: "100%",
-    maxWidth: 500,
+    width: 300,
     padding: 35,
     borderRadius: 5,
     backgroundColor: "rgba(255, 255, 255, 1)",
@@ -31,8 +54,8 @@ export const globalStyles = StyleSheet.create({
   title: {
     fontSize: 36,
     marginBottom: 24,
-    fontWeight: "300",
-    color: "white",
+    fontWeight: "500",
+    color: "#045076",
     textAlign: "center",
   },
   button: {
@@ -64,6 +87,8 @@ export const globalStyles = StyleSheet.create({
   inputLabel: {
     marginBottom: 10,
     alignItems: "left",
+    fontSize: 16,
+    fontWeight: "500",
   },
   errorText: {
     color: 'red',
