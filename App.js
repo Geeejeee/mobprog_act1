@@ -1,6 +1,7 @@
 import React from 'react';
 import AppNavigation from './navigation/appNavigation'; // Import navigation setup
 import ToastNotification from './components/toast';
+import Toast from 'react-native-toast-message';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './screens/LoginScreen';
@@ -12,6 +13,7 @@ const Stack = createStackNavigator();
 
 const App = () => {
   return (
+    <>
     <NavigationContainer>
       <Stack.Navigator screenOptions={{
         headerShown: false,
@@ -22,6 +24,8 @@ const App = () => {
         <Stack.Screen name='Welcome' component={WelcomeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
+    <Toast />
+    </>
   );
 };
 
