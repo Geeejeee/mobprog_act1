@@ -20,8 +20,8 @@ export default function LoginScreen({ navigation }) {
     const storedUser = await getLoginData();
     if (storedUser && (storedUser.email === values.userNameOrEmail || storedUser.userName === values.userNameOrEmail) && storedUser.password === values.password) {
       showSuccessToast(`Welcome, ${storedUser.firstName}! 👋`);
-      // Redirect to another screen or reset fields if needed
-    } else {
+      navigation.navigate('Welcome');
+      } else {
       showErrorToast('Incorrect username/email or password');
     }
   };
@@ -53,7 +53,7 @@ export default function LoginScreen({ navigation }) {
                 <Text style={globalStyles.errorText}>{errors.userNameOrEmail}</Text>
               )}
 
-              <Text style={globalStyles.inputLabel}>Password</Text>
+              <Text style={globalStyles.inputLabel}> {'\n'} Password</Text>
               <View>
                 <TextInput
                   style={globalStyles.inputWithIcon}
