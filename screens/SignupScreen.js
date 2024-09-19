@@ -1,4 +1,4 @@
-import { Text, View, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
+import { Text, View, TextInput, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
 import { globalStyles } from '../styles/global.js';
 import { useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -35,7 +35,9 @@ export default function SignupScreen({ navigation }) {
   };
 
   return (
+    <ScrollView contentContainerStyle={{ flexGrow: 1}}>
     <ImageBackground source={backgroundImage} style={globalStyles.container}>
+        <View style={globalStyles.innerContainer}>
       <View>
         <Text style={globalStyles.title}>Sign Up</Text>
       </View>
@@ -61,7 +63,7 @@ export default function SignupScreen({ navigation }) {
                 <Text style={globalStyles.errorText}>{errors.firstName}</Text>
               )}
 
-              <Text style={globalStyles.inputLabel}>Last Name</Text>
+              <Text style={globalStyles.inputLabel}> {'\n'} Last Name</Text>
               <TextInput
                 style={globalStyles.input}
                 placeholder="Last Name"
@@ -74,7 +76,7 @@ export default function SignupScreen({ navigation }) {
                 <Text style={globalStyles.errorText}>{errors.lastName}</Text>
               )}
 
-              <Text style={globalStyles.inputLabel}>Email</Text>
+              <Text style={globalStyles.inputLabel}> {'\n'} Email</Text>
               <TextInput
                 style={globalStyles.input}
                 placeholder="Email"
@@ -87,7 +89,7 @@ export default function SignupScreen({ navigation }) {
                 <Text style={globalStyles.errorText}>{errors.email}</Text>
               )}
 
-              <Text style={globalStyles.inputLabel}>Username</Text>
+              <Text style={globalStyles.inputLabel}> {'\n'} Username</Text>
               <TextInput
                 style={globalStyles.input}
                 placeholder="Username"
@@ -100,7 +102,7 @@ export default function SignupScreen({ navigation }) {
                 <Text style={globalStyles.errorText}>{errors.userName}</Text>
               )}
 
-              <Text style={globalStyles.inputLabel}>Password</Text>
+              <Text style={globalStyles.inputLabel}> {'\n'} Password</Text>
               <View>
                 <TextInput
                   style={globalStyles.inputWithIcon}
@@ -152,6 +154,8 @@ export default function SignupScreen({ navigation }) {
           )}
         </Formik>
       </View>
+      </View>
     </ImageBackground>
+    </ScrollView>
   );
 }
