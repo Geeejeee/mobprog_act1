@@ -1,109 +1,156 @@
 import { Text, View, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
 import { globalStyles } from '../styles/global.js';
 import { useState } from 'react';
-import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import { Formik } from 'formik';
+import { signupValidation } from '../validation/signupValidation'; 
+import { saveLoginData, getLoginData } from '../storage/userDetails'; 
+import { showSuccessToast, showErrorToast } from '../components/toast.js'; 
 
 const backgroundImage = { uri: 'https://images.unsplash.com/photo-1530569673472-307dc017a82d?q=80&w=1888&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' };
 
 export default function SignupScreen({ navigation }) {
-  const [Firstname, setFname] = useState("");
-  const [Email, setEmail] = useState("");
-  const [Username, setUsername] = useState("");
-  const [Password, setPassword] = useState("");
   const [isPasswordVisible, setPasswordVisibility] = useState(false);
-
+  const [isConfirmPasswordVisible, setConfirmPasswordVisibility] = useState(false);
 
   const togglePasswordVisibility = () => {
     setPasswordVisibility(!isPasswordVisible);
   };
 
-  const handleRegister = () => {
-    if (Firstname && Email && Username && Password) {
-      // Clear input fields
-      setFname("");
-      setEmail("");
-      setUsername("");
-      setPassword("");
+  const toggleConfirmPasswordVisibility = () => {
+    setConfirmPasswordVisibility(!isConfirmPasswordVisible);
+  };
 
-      // Navigate to login screen after successful registration
-      navigation.navigate('Login');
+  const handleSignup = async (values) => {
+    const storedUser = await getLoginData();
 
-      // Show toast message on the login screen
-      Toast.show({
-        type: 'success',
-        text1: 'Registered Successfully!',
-        text2: `Welcome, ${Firstname}! 👋`
-      });
+    if (storedUser && (storedUser.email === values.email && storedUser.userName === values.userName)) {
+      showErrorToast('Email or Username is already registered');
     } else {
-      Toast.show({
-        type: 'error',
-        text1: 'Registration Failed',
-        text2: 'Please fill out all the fields'
-      });
+      // Save new user data to AsyncStorage
+      await saveLoginData(values.firstName, values.lastName, values.email, values.userName, values.password);
+      showSuccessToast(`Account created for ${values.firstName}!`);
+      navigation.navigate('Login'); // Redirect to login after signup
     }
   };
 
   return (
-    <ImageBackground
-      source={backgroundImage}
-      style={globalStyles.container}
-    >
+    <ImageBackground source={backgroundImage} style={globalStyles.container}>
       <View>
         <Text style={globalStyles.title}>Sign Up</Text>
       </View>
-      
+
       <View style={globalStyles.form}>
-        <Text style={globalStyles.inputLabel}>First Name</Text>
-        <TextInput
-          style={globalStyles.input}
-          placeholder="First Name"
-          placeholderTextColor="#aaa"
-          value={Firstname}
-          onChangeText={setFname}
-        />
+        <Formik
+          initialValues={{ firstName: '', lastName: '', email: '', userName: '', password: '', confirmPassword: '' }}
+          validationSchema={signupValidation} // Apply validation
+          onSubmit={(values) => handleSignup(values)} // Handle sign-up
+        >
+          {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+            <View>
+              <Text style={globalStyles.inputLabel}>First Name</Text>
+              <TextInput
+                style={globalStyles.input}
+                placeholder="First Name"
+                placeholderTextColor="#aaa"
+                value={values.firstName}
+                onChangeText={handleChange('firstName')}
+                onBlur={handleBlur('firstName')}
+              />
+              {errors.firstName && touched.firstName && (
+                <Text style={globalStyles.errorText}>{errors.firstName}</Text>
+              )}
 
-        <Text style={globalStyles.inputLabel}>Email</Text>
-        <TextInput
-          style={globalStyles.input}
-          placeholder="Email"
-          placeholderTextColor="#aaa"
-          value={Email}
-          onChangeText={setEmail}
-        />
+              <Text style={globalStyles.inputLabel}>Last Name</Text>
+              <TextInput
+                style={globalStyles.input}
+                placeholder="Last Name"
+                placeholderTextColor="#aaa"
+                value={values.lastName}
+                onChangeText={handleChange('lastName')}
+                onBlur={handleBlur('lastName')}
+              />
+              {errors.lastName && touched.lastName && (
+                <Text style={globalStyles.errorText}>{errors.lastName}</Text>
+              )}
 
-        <Text style={globalStyles.inputLabel}>Username</Text>
-        <TextInput
-          style={globalStyles.input}
-          placeholder="Username"
-          placeholderTextColor="#aaa"
-          value={Username}
-          onChangeText={setUsername}
-        />
+              <Text style={globalStyles.inputLabel}>Email</Text>
+              <TextInput
+                style={globalStyles.input}
+                placeholder="Email"
+                placeholderTextColor="#aaa"
+                value={values.email}
+                onChangeText={handleChange('email')}
+                onBlur={handleBlur('email')}
+              />
+              {errors.email && touched.email && (
+                <Text style={globalStyles.errorText}>{errors.email}</Text>
+              )}
 
-      <Text style={globalStyles.inputLabel}>Password</Text>
-        <View style={globalStyles.passwordContainer}>
-          <TextInput
-            style={globalStyles.inputWithIcon} // Style for TextInput with icon
-            placeholder="Password"
-            placeholderTextColor="#aaa"
-            secureTextEntry={!isPasswordVisible} // Toggle visibility
-            value={Password}
-            onChangeText={setPassword}
-          />
-          <TouchableOpacity onPress={togglePasswordVisibility} style={globalStyles.eyeIcon}>
-            <Icon name={isPasswordVisible ? 'eye-off' : 'eye'} size={24} color="#aaa" />
-          </TouchableOpacity>
-        </View>
-        
-        <TouchableOpacity style={globalStyles.button} onPress={handleRegister}>
-          <Text style={globalStyles.buttonText}>Register</Text>
-        </TouchableOpacity>
+              <Text style={globalStyles.inputLabel}>Username</Text>
+              <TextInput
+                style={globalStyles.input}
+                placeholder="Username"
+                placeholderTextColor="#aaa"
+                value={values.userName}
+                onChangeText={handleChange('userName')}
+                onBlur={handleBlur('userName')}
+              />
+              {errors.userName && touched.userName && (
+                <Text style={globalStyles.errorText}>{errors.userName}</Text>
+              )}
 
-        <Text style={globalStyles.signuptext}>Have an Account?
-          <Text style={globalStyles.signuptext2} onPress={() => navigation.navigate("Login")}> Login! </Text>
-        </Text>
+              <Text style={globalStyles.inputLabel}>Password</Text>
+              <View>
+                <TextInput
+                  style={globalStyles.inputWithIcon}
+                  placeholder="Password"
+                  placeholderTextColor="#aaa"
+                  secureTextEntry={!isPasswordVisible}
+                  value={values.password}
+                  onChangeText={handleChange('password')}
+                  onBlur={handleBlur('password')}
+                />
+                <TouchableOpacity onPress={togglePasswordVisibility} style={globalStyles.eyeIcon}>
+                  <Icon name={isPasswordVisible ? 'eye-off' : 'eye'} size={24} color="#aaa" />
+                </TouchableOpacity>
+              </View>
+              {errors.password && touched.password && (
+                <Text style={globalStyles.errorText}>{errors.password}</Text>
+              )}
+
+              <Text style={globalStyles.inputLabel}>Confirm Password</Text>
+              <View>
+                <TextInput
+                  style={globalStyles.inputWithIcon}
+                  placeholder="Confirm Password"
+                  placeholderTextColor="#aaa"
+                  secureTextEntry={!isConfirmPasswordVisible}
+                  value={values.confirmPassword}
+                  onChangeText={handleChange('confirmPassword')}
+                  onBlur={handleBlur('confirmPassword')}
+                />
+                <TouchableOpacity onPress={toggleConfirmPasswordVisibility} style={globalStyles.eyeIcon}>
+                  <Icon name={isConfirmPasswordVisible ? 'eye-off' : 'eye'} size={24} color="#aaa" />
+                </TouchableOpacity>
+              </View>
+              {errors.confirmPassword && touched.confirmPassword && (
+                <Text style={globalStyles.errorText}>{errors.confirmPassword}</Text>
+              )}
+
+              <TouchableOpacity style={globalStyles.button} onPress={handleSubmit}>
+                <Text style={globalStyles.buttonText}>Sign Up</Text>
+              </TouchableOpacity>
+
+              <Text style={globalStyles.signuptext}>
+                Already have an account?{' '}
+                <Text style={globalStyles.signuptext2} onPress={() => navigation.navigate('Login')}>
+                  Log in!
+                </Text>
+              </Text>
+            </View>
+          )}
+        </Formik>
       </View>
     </ImageBackground>
   );
