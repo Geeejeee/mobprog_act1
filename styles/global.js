@@ -11,24 +11,24 @@ export const globalStyles = StyleSheet.create({
   },
   innerContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
     padding: 20,
   },
   welcomeText: {
-    fontSize: 24, 
-    color: 'white',
-    fontWeight: 'bold',
+    fontSize: 24,
+    color: "white",
+    fontWeight: "bold",
   },
   logoutButton: {
     marginTop: 20,
     padding: 10,
-    backgroundColor: 'navy',
+    backgroundColor: "navy",
     borderRadius: 5,
   },
   logoutButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
   },
   form: {
@@ -91,7 +91,7 @@ export const globalStyles = StyleSheet.create({
     fontWeight: "500",
   },
   errorText: {
-    color: 'red',
+    color: "red",
     marginBottom: 10,
   },
   passwordContainer: {
@@ -118,5 +118,12 @@ export const globalStyles = StyleSheet.create({
     height: "70%",
     justifyContent: "center",
     alignItems: "center",
+  },
+
+  Image: {
+    width: 300,
+    height: 300,
+    alignSelf: "center",
+    borderRadius: 10,
   },
 });

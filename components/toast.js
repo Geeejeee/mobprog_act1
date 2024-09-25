@@ -12,6 +12,7 @@ export const showSuccessToast = (message) => {
     type: 'success',
     text1: 'Success',
     text2: message,
+    position: 'top',
     visibilityTime: 3000,
     autoHide: true,
     topOffset: 30,
