@@ -81,7 +81,7 @@ export default function LoginScreen() {
 
               <Text style={globalStyles.signuptext}>
                 Don't have an account?{' '}
-                <Text style={globalStyles.signuptext2} onPress={() => router.push('/signup')}>  {/* Navigate to Signup using router.push */}
+                <Text style={globalStyles.signuptext2} onPress={() => router.push('/SignupScreen')}>  {/* Navigate to Signup using router.push */}
                   Sign up!
                 </Text>
               </Text>
