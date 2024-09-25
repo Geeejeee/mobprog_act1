@@ -1,7 +1,7 @@
 {
   "name": "mobprog_act1",
   "version": "1.0.0",
-  "main": "expo/AppEntry.js",
+  "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -29,7 +29,11 @@
     "react-native-toast-message": "^2.2.0",
     "react-native-web": "~0.19.10",
     "react-navigation": "^5.0.0",
-    "yup": "^1.4.0"
+    "yup": "^1.4.0",
+    "expo-router": "~3.5.23",
+    "expo-linking": "~6.3.1",
+    "expo-constants": "~16.0.2",
+    "typescript": "~5.3.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
