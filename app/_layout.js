@@ -1,7 +1,10 @@
 import { Stack } from "expo-router";
+import ToastNotification from '../components/toast'; // Ensure correct import path
+
 
 const RootLayout = () => {
     return (
+        <>
     <Stack>
         <Stack.Screen name="screens/LoginScreen" options={{
             headerShown:false,
@@ -15,6 +18,8 @@ const RootLayout = () => {
             headerShown: false
         }}/>
     </Stack>
+    <ToastNotification />
+    </>
     )
 };
 
