@@ -27,7 +27,7 @@ export default function SignupScreen() {
   const handleSignup = async (values) => {
     const storedUser = await getLoginData();
     
-    if (storedUser && (storedUser.email === values.email && storedUser.userName === values.userName)) {
+    if (storedUser && (storedUser.email === values.email || storedUser.userName === values.userName)) {
       showErrorToast('Email or Username is already registered');
     } else {
       // Save new user data to AsyncStorage
