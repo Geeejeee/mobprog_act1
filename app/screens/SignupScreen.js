@@ -1,15 +1,18 @@
 import { Text, View, TextInput, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
-import { globalStyles } from '../styles/global.js';
+import { globalStyles } from '../../styles/global.js';
 import { useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Formik } from 'formik';
-import { signupValidation } from '../validation/signupValidation'; 
-import { saveLoginData, getLoginData } from '../storage/userDetails'; 
-import { showSuccessToast, showErrorToast } from '../components/toast.js'; 
+import { signupValidation } from '../../validation/signupValidation.js'; 
+import { saveLoginData, getLoginData } from '../../storage/userDetails.js'; 
+import { showSuccessToast, showErrorToast } from '../../components/toast.js'; 
+import { useRouter } from 'expo-router';
 
 const backgroundImage = { uri: 'https://images.unsplash.com/photo-1530569673472-307dc017a82d?q=80&w=1888&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' };
 
-export default function SignupScreen({ navigation }) {
+export default function SignupScreen() {
+  const router = useRouter()
+
   const [isPasswordVisible, setPasswordVisibility] = useState(false);
   const [isConfirmPasswordVisible, setConfirmPasswordVisibility] = useState(false);
 
@@ -23,14 +26,14 @@ export default function SignupScreen({ navigation }) {
 
   const handleSignup = async (values) => {
     const storedUser = await getLoginData();
-
-    if (storedUser && (storedUser.email === values.email && storedUser.userName === values.userName)) {
+    
+    if (storedUser && (storedUser.email === values.email || storedUser.userName === values.userName)) {
       showErrorToast('Email or Username is already registered');
     } else {
       // Save new user data to AsyncStorage
       await saveLoginData(values.firstName, values.lastName, values.email, values.userName, values.password);
       showSuccessToast(`Account created for ${values.firstName}!`);
-      navigation.navigate('Login'); // Redirect to login after signup
+      router.push('/screens/LoginScreen'); // Redirect to login after signup
     }
   };
 
@@ -146,7 +149,7 @@ export default function SignupScreen({ navigation }) {
 
               <Text style={globalStyles.signuptext}>
                 Already have an account?{' '}
-                <Text style={globalStyles.signuptext2} onPress={() => navigation.navigate('Login')}>
+                <Text style={globalStyles.signuptext2} onPress={() => router.push('/screens/LoginScreen')}>
                   Log in!
                 </Text>
               </Text>
