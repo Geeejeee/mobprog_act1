@@ -8,7 +8,7 @@ export default function Index() {
 
   return (
     <>
-      <Redirect href="/(tabs)/WelcomeScreen" />
+      <Redirect href="/screens/LoginScreen" />
       <ToastNotification />
     </>
   );
