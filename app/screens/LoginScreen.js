@@ -1,12 +1,12 @@
 // loginScreen.js
 import { Text, View, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
 import { globalStyles } from '../../styles/global.js';
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Formik } from 'formik';
-import { loginValidation } from '../../validation/loginValidation.js'; // Import validation schema
-import { getLoginData } from '../../storage/userDetails.js'; // Import AsyncStorage helper
-import { showSuccessToast, showErrorToast } from '../../components/toast.js'; // Import toast functions
+import { loginValidation } from '../../validation/loginValidation.js'; 
+import { getLoginData, isLoggedIn, setLoggedIn} from '../../storage/userDetails.js'; 
+import { showSuccessToast, showErrorToast } from '../../components/toast.js'; 
 import { useRouter } from 'expo-router';
 
 const backgroundImage = { uri: 'https://images.unsplash.com/photo-1530569673472-307dc017a82d?q=80&w=1888&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' };
@@ -19,11 +19,23 @@ export default function LoginScreen() {
     setPasswordVisibility(!isPasswordVisible);
   };
 
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const loggedIn = await isLoggedIn();
+      if (loggedIn) {
+        router.push('/WelcomeScreen'); 
+      }
+    };
+
+    checkLoginStatus();
+  }, []);
+
   const handleLogin = async (values) => {
     const storedUser = await getLoginData();
 
     if (storedUser && (storedUser.email === values.userNameOrEmail || storedUser.userName === values.userNameOrEmail) && storedUser.password === values.password) {
       showSuccessToast(`Welcome, ${storedUser.firstName}! 👋`);
+      await setLoggedIn(true);
       router.push('/WelcomeScreen');
     } else {
       showErrorToast('Incorrect username/email or password');

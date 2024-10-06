@@ -42,3 +42,23 @@ export const clearLoginData = async () => {
     console.error('Error clearing data from AsyncStorage', error);
   }
 };
+
+  export const setLoggedIn = async (status) => {
+    try {
+      await AsyncStorage.setItem('loggedIn', status ? 'true' : 'false');
+    } catch (error) {
+      console.error('Error setting loggedIn status', error);
+    }
+  };
+  
+  // Function to get loggedIn flag
+  export const isLoggedIn = async () => {
+    try {
+      const loggedIn = await AsyncStorage.getItem('loggedIn');
+      return loggedIn === 'true';
+    } catch (error) {
+      console.error('Error getting loggedIn status', error);
+      return false;
+    }
+  };
+
