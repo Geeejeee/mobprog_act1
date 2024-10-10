@@ -1,6 +1,6 @@
 import React from 'react';
-import { Redirect } from 'expo-router'; // Correct import for navigation
-import ToastNotification from '../components/toast'; // Ensure correct import path
+import { Redirect } from 'expo-router';
+import ToastNotification from '../components/toast';
 
 
 export default function Index() {
