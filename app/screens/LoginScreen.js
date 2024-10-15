@@ -1,4 +1,5 @@
 // loginScreen.js
+
 import { Text, View, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
 import { globalStyles } from '../../styles/global.js';
 import { useState, useEffect, useContext, useMemo} from 'react';
@@ -10,7 +11,9 @@ import { getLoginData } from '../../storage/userDetails.js';
 import { showSuccessToast, showErrorToast } from '../../components/toast.js'; 
 import { useRouter } from 'expo-router';
 
-const backgroundImage = { uri: 'https://images.unsplash.com/photo-1530569673472-307dc017a82d?q=80&w=1888&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' };
+const backgroundImage = {
+  uri: "https://images.unsplash.com/photo-1530569673472-307dc017a82d?q=80&w=1888&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+};
 
 export default function LoginScreen() {
   const { isAuthenticated, login } = useContext(AuthContext);
@@ -25,6 +28,7 @@ export default function LoginScreen() {
   };
 
   useEffect(() => {
+
     if (isAuthenticated) {
       router.push('/WelcomeScreen');
     }
@@ -36,9 +40,19 @@ export default function LoginScreen() {
       showSuccessToast(`Welcome, ${storedUser.firstName}! 👋`);
       await login();  // Call login from context
       router.push('/WelcomeScreen');  // Redirect to home on successful login
+
     } else {
-      showErrorToast('Incorrect username/email or password');
+      showErrorToast("Incorrect username/email or password");
     }
+  };
+
+  const LoginScreen = () => {
+    const { setUser } = useContext(UserContext);
+    const [username, setUsername] = useState("");
+
+    const handleLogin = () => {
+      setUser({ isLoggedIn: true, username });
+    };
   };
 
   return (
@@ -62,7 +76,14 @@ export default function LoginScreen() {
           validationSchema={memoizedValidationSchema} // Apply validation
           onSubmit={(values) => handleLogin(values)} // Handle login
         >
-          {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            values,
+            errors,
+            touched,
+          }) => (
             <View>
               <Text style={globalStyles.inputLabel}>Username or Email</Text>
               <TextInput
@@ -70,14 +91,16 @@ export default function LoginScreen() {
                 placeholder="Username or Email"
                 placeholderTextColor="#aaa"
                 value={values.userNameOrEmail}
-                onChangeText={handleChange('userNameOrEmail')}
-                onBlur={handleBlur('userNameOrEmail')}
+                onChangeText={handleChange("userNameOrEmail")}
+                onBlur={handleBlur("userNameOrEmail")}
               />
               {errors.userNameOrEmail && touched.userNameOrEmail && (
-                <Text style={globalStyles.errorText}>{errors.userNameOrEmail}</Text>
+                <Text style={globalStyles.errorText}>
+                  {errors.userNameOrEmail}
+                </Text>
               )}
 
-              <Text style={globalStyles.inputLabel}> {'\n'} Password</Text>
+              <Text style={globalStyles.inputLabel}> {"\n"} Password</Text>
               <View>
                 <TextInput
                   style={globalStyles.inputWithIcon}
@@ -85,24 +108,37 @@ export default function LoginScreen() {
                   placeholderTextColor="#aaa"
                   secureTextEntry={!isPasswordVisible}
                   value={values.password}
-                  onChangeText={handleChange('password')}
-                  onBlur={handleBlur('password')}
+                  onChangeText={handleChange("password")}
+                  onBlur={handleBlur("password")}
                 />
-                <TouchableOpacity onPress={togglePasswordVisibility} style={globalStyles.eyeIcon}>
-                  <Icon name={isPasswordVisible ? 'eye-off' : 'eye'} size={24} color="#aaa" />
+                <TouchableOpacity
+                  onPress={togglePasswordVisibility}
+                  style={globalStyles.eyeIcon}
+                >
+                  <Icon
+                    name={isPasswordVisible ? "eye-off" : "eye"}
+                    size={24}
+                    color="#aaa"
+                  />
                 </TouchableOpacity>
               </View>
               {errors.password && touched.password && (
                 <Text style={globalStyles.errorText}>{errors.password}</Text>
               )}
 
-              <TouchableOpacity style={globalStyles.button} onPress={handleSubmit}>
+              <TouchableOpacity
+                style={globalStyles.button}
+                onPress={handleSubmit}
+              >
                 <Text style={globalStyles.buttonText}>Login</Text>
               </TouchableOpacity>
 
               <Text style={globalStyles.signuptext}>
-                Don't have an account?{' '}
-                <Text style={globalStyles.signuptext2} onPress={() => router.push('/screens/SignupScreen')}>
+                Don't have an account?{" "}
+                <Text
+                  style={globalStyles.signuptext2}
+                  onPress={() => router.push("/screens/SignupScreen")}
+                >
                   Sign up!
                 </Text>
               </Text>

@@ -1,3 +1,4 @@
+
 import React, {useState, useEffect, useContext} from 'react';
 import { View, Text, ImageBackground, TouchableOpacity, StyleSheet } from 'react-native';
 import { globalStyles } from '../../styles/global.js';
@@ -46,3 +47,50 @@ export default function WelcomeScreen (){
     );
 };
 
+export default function WelcomeScreen() {
+  const router = useRouter();
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const storedUser = await getLoginData();
+      if (storedUser) {
+        setUserName(storedUser.firstName);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await setLoggedIn(false);
+      router.push("/screens/LoginScreen");
+    } catch (error) {
+      console.error("Error during logout", error);
+    }
+  };
+
+  const WelcomeScreen = () => {
+    const { user, setUser } = useContext(UserContext);
+
+    const handleLogout = () => {
+      setUser({ isLoggedIn: false, username: "" });
+    };
+  };
+
+  return (
+    <ImageBackground source={backgroundImage} style={globalStyles.container}>
+      <View style={globalStyles.innerContainer}>
+        <Text style={globalStyles.welcomeText}> Welcome to the App! </Text>
+        <Text style={globalStyles.welcomeText}> ({userName} 👋) </Text>
+        <TouchableOpacity
+          style={globalStyles.logoutButton}
+          onPress={handleLogout}
+        >
+          <Text style={globalStyles.logoutButtonText}> Logout </Text>
+        </TouchableOpacity>
+      </View>
+    </ImageBackground>
+  );
+}
