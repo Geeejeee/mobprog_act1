@@ -1,6 +1,6 @@
 import { Text, View, TextInput, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
 import { globalStyles } from '../../styles/global.js';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Formik } from 'formik';
 import { signupValidation } from '../../validation/signupValidation.js'; 
@@ -13,8 +13,12 @@ const backgroundImage = { uri: 'https://images.unsplash.com/photo-1530569673472-
 export default function SignupScreen() {
   const router = useRouter()
 
+  const memoizedValidationSchema = useMemo(() => signupValidation, []);
+
   const [isPasswordVisible, setPasswordVisibility] = useState(false);
   const [isConfirmPasswordVisible, setConfirmPasswordVisibility] = useState(false);
+
+  
 
   const togglePasswordVisibility = () => {
     setPasswordVisibility(!isPasswordVisible);
@@ -48,7 +52,7 @@ export default function SignupScreen() {
       <View style={globalStyles.form}>
         <Formik
           initialValues={{ firstName: '', lastName: '', email: '', userName: '', password: '', confirmPassword: '' }}
-          validationSchema={signupValidation} // Apply validation
+          validationSchema={memoizedValidationSchema} // Apply validation
           onSubmit={(values) => handleSignup(values)} // Handle sign-up
         >
           {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
