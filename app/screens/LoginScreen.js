@@ -2,14 +2,30 @@
 
 import { Text, View, TextInput, TouchableOpacity, ImageBackground } from 'react-native';
 import { globalStyles } from '../../styles/global.js';
-import { useState, useEffect, useContext, useMemo} from 'react';
+import { useState, useEffect, useContext, useMemo } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Formik } from 'formik';
 import { loginValidation } from '../../validation/loginValidation.js'; 
 import { AuthContext } from '../../components/useContext.js';
-import { getLoginData } from '../../storage/userDetails.js'; 
 import { showSuccessToast, showErrorToast } from '../../components/toast.js'; 
 import { useRouter } from 'expo-router';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+
+// Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyB6IqplSEXxYVwpB7fAGq53nRvg8R1R4W0",
+  authDomain: "mobprog-act1.firebaseapp.com",
+  projectId: "mobprog-act1",
+  storageBucket: "mobprog-act1.appspot.com",
+  messagingSenderId: "658781417648",
+  appId: "1:658781417648:web:61b7a7919db16a75d2cb75",
+  measurementId: "G-40LEPE6QWV"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
 const backgroundImage = {
   uri: "https://images.unsplash.com/photo-1530569673472-307dc017a82d?q=80&w=1888&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -17,7 +33,6 @@ const backgroundImage = {
 
 export default function LoginScreen() {
   const { isAuthenticated, login } = useContext(AuthContext);
-
   const router = useRouter();
   const [isPasswordVisible, setPasswordVisibility] = useState(false);
 
@@ -28,32 +43,43 @@ export default function LoginScreen() {
   };
 
   useEffect(() => {
-
     if (isAuthenticated) {
       router.push('/WelcomeScreen');
     }
   }, [isAuthenticated]);
 
-  const handleLogin = async (values) => {
-    const storedUser = await getLoginData();
-    if (storedUser && (storedUser.email === values.userNameOrEmail || storedUser.userName === values.userNameOrEmail) && storedUser.password === values.password) {
-      showSuccessToast(`Welcome, ${storedUser.firstName}! 👋`);
-      await login();  // Call login from context
-      router.push('/WelcomeScreen');  // Redirect to home on successful login
+  // Handle Firebase Login
+ const handleLogin = async (values) => {
+  const auth = getAuth(); // Firebase Auth instance
 
+  try {
+    // Use Firebase Auth to sign in the user
+    const userCredential = await signInWithEmailAndPassword(auth, values.userNameOrEmail, values.password);
+
+    // If sign-in is successful, log the user in
+    const user = userCredential.user;
+    showSuccessToast(`Welcome back, ${user.displayName || user.email}! 👋`);
+
+    // Redirect to the Welcome screen
+    router.push('/WelcomeScreen');
+
+  } catch (error) {
+    // Handle Firebase login errors and show a custom toast message
+    if (error.code === 'auth/user-not-found') {
+      showErrorToast('User not found. Please check your email or sign up.');
+    } else if (error.code === 'auth/wrong-password') {
+      showErrorToast('Incorrect password. Please try again.');
+    } else if (error.code === 'auth/invalid-email') {
+      showErrorToast('Invalid email format. Please check your email.');
     } else {
-      showErrorToast("Incorrect username/email or password");
+      showErrorToast('Login failed. Please try again later.');
     }
-  };
 
-  const LoginScreen = () => {
-    const { setUser } = useContext(UserContext);
-    const [username, setUsername] = useState("");
+    // You can log the error for debugging if needed
+    console.error('Firebase login error:', error.message);
+  }
+};
 
-    const handleLogin = () => {
-      setUser({ isLoggedIn: true, username });
-    };
-  };
 
   return (
     <ImageBackground source={backgroundImage} style={globalStyles.container}>

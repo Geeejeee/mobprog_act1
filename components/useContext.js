@@ -1,36 +1,24 @@
-import React, { createContext, useState, useEffect } from 'react';
-import { getLoginData } from '../storage/userDetails';  // AsyncStorage functions
+import React, { createContext, useState } from 'react';
+import { getAuth, signOut as firebaseSignOut } from 'firebase/auth'; // Import signOut
 
-// Create the AuthContext
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  const auth = getAuth();
 
-  // Function to log in the user
-  const login = () => {
-    setIsAuthenticated(true);
-  };
-
-  // Function to log out the user
   const logout = async () => {
-    setIsAuthenticated(false);
+    try {
+      await firebaseSignOut(auth); // Use Firebase's signOut
+      setIsAuthenticated(false); // Update local state
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
-
-  // Check if the user is already logged in when the app starts
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      const userData = await getLoginData();
-      if (userData) {
-        setIsAuthenticated(true);
-      }
-    };
-
-    checkLoginStatus();
-  }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, logout }}>
       {children}
     </AuthContext.Provider>
   );

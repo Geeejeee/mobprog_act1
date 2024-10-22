@@ -22,10 +22,14 @@ export const globalStyles = StyleSheet.create({
     fontWeight: 'bold',
   },
   logoutButton: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: 'navy',
+    width: "80%",
+    backgroundColor: "navy",
+    padding: 10, // Increased padding for better touch area
     borderRadius: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 30,
+    alignSelf: "center",
   },
   logoutButtonText: {
     color: 'white',
