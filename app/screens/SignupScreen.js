@@ -8,6 +8,8 @@ import { showSuccessToast, showErrorToast } from '../../components/toast.js';
 import { useRouter } from 'expo-router';
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { db } from "../../components/firebase.js"; // Import Firestore db from your firebase config
+import { setDoc, doc } from "firebase/firestore";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -27,7 +29,7 @@ const auth = getAuth(app);
 const backgroundImage = { uri: 'https://images.unsplash.com/photo-1530569673472-307dc017a82d?q=80&w=1888&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' };
 
 export default function SignupScreen() {
-  const router = useRouter()
+  const router = useRouter();
 
   const memoizedValidationSchema = useMemo(() => signupValidation, []);
 
@@ -48,8 +50,19 @@ export default function SignupScreen() {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
 
+      // Save user info in Firestore
+      if (user) {
+        await setDoc(doc(db, "Users", user.uid), {
+          firstName: values.firstName,
+          lastName: values.lastName,
+          email: values.email,
+          userName: values.userName,
+        });
+      }
+      
+      console.log("User Registered Successfully!");
       showSuccessToast(`Account created for ${values.firstName}! 👋`);
-      router.push('/screens/LoginScreen');  // Redirect to login after signup
+      router.push('/screens/LoginScreen'); // Redirect to login after signup
     } catch (error) {
       console.error("Signup error:", error.message);
       if (error.code === 'auth/email-already-in-use') {

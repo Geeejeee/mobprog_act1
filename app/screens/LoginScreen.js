@@ -49,130 +49,124 @@ export default function LoginScreen() {
   }, [isAuthenticated]);
 
   // Handle Firebase Login
- const handleLogin = async (values) => {
-  const auth = getAuth(); // Firebase Auth instance
+  const handleLogin = async (values) => {
+    try {
+      // Use Firebase Auth to sign in the user
+      const userCredential = await signInWithEmailAndPassword(auth, values.userNameOrEmail, values.password);
+      const user = userCredential.user;
 
-  try {
-    // Use Firebase Auth to sign in the user
-    const userCredential = await signInWithEmailAndPassword(auth, values.userNameOrEmail, values.password);
+      // Successful login toast
+      showSuccessToast(`Welcome back, ${user.displayName || user.email}! 👋`);
 
-    // If sign-in is successful, log the user in
-    const user = userCredential.user;
-    showSuccessToast(`Welcome back, ${user.displayName || user.email}! 👋`);
+      // Redirect to Welcome screen
+      router.push('/WelcomeScreen');
 
-    // Redirect to the Welcome screen
-    router.push('/WelcomeScreen');
+    } catch (error) {
+      // Handle Firebase login errors and show custom toast messages
+      if (error.code === 'auth/user-not-found') {
+        showErrorToast('User not found. Please check your email or sign up.');
+      } else if (error.code === 'auth/wrong-password') {
+        showErrorToast('Incorrect password. Please try again.');
+      } else if (error.code === 'auth/invalid-email') {
+        showErrorToast('Invalid email format. Please check your email.');
+      } else {
+        showErrorToast('Login failed. Please try again later.');
+      }
 
-  } catch (error) {
-    // Handle Firebase login errors and show a custom toast message
-    if (error.code === 'auth/user-not-found') {
-      showErrorToast('User not found. Please check your email or sign up.');
-    } else if (error.code === 'auth/wrong-password') {
-      showErrorToast('Incorrect password. Please try again.');
-    } else if (error.code === 'auth/invalid-email') {
-      showErrorToast('Invalid email format. Please check your email.');
-    } else {
-      showErrorToast('Login failed. Please try again later.');
+      console.error('Firebase login error:', error.message);
     }
-
-    // You can log the error for debugging if needed
-    console.error('Firebase login error:', error.message);
-  }
-};
-
+  };
 
   return (
     <ImageBackground source={backgroundImage} style={globalStyles.container}>
-     {isAuthenticated ? (  
-      <View>
-      <Text style={globalStyles.title}>Already Logged In!</Text>
-      <TouchableOpacity style={globalStyles.button} onPress={() => router.push('/WelcomeScreen')} // Navigate directly on press
-      >
-        <Text style={globalStyles.buttonText}>Go back</Text>
-      </TouchableOpacity>
-      </View>
-    ) :(
-      <View>
-        <Text style={globalStyles.title}>Login</Text>
-   
-      
-      <View style={globalStyles.form}>
-        <Formik
-          initialValues={{ userNameOrEmail: '', password: '' }}
-          validationSchema={memoizedValidationSchema} // Apply validation
-          onSubmit={(values) => handleLogin(values)} // Handle login
-        >
-          {({
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            values,
-            errors,
-            touched,
-          }) => (
-            <View>
-              <Text style={globalStyles.inputLabel}>Username or Email</Text>
-              <TextInput
-                style={globalStyles.input}
-                placeholder="Username or Email"
-                placeholderTextColor="#aaa"
-                value={values.userNameOrEmail}
-                onChangeText={handleChange("userNameOrEmail")}
-                onBlur={handleBlur("userNameOrEmail")}
-              />
-              {errors.userNameOrEmail && touched.userNameOrEmail && (
-                <Text style={globalStyles.errorText}>
-                  {errors.userNameOrEmail}
-                </Text>
-              )}
-
-              <Text style={globalStyles.inputLabel}> {"\n"} Password</Text>
-              <View>
-                <TextInput
-                  style={globalStyles.inputWithIcon}
-                  placeholder="Password"
-                  placeholderTextColor="#aaa"
-                  secureTextEntry={!isPasswordVisible}
-                  value={values.password}
-                  onChangeText={handleChange("password")}
-                  onBlur={handleBlur("password")}
-                />
-                <TouchableOpacity
-                  onPress={togglePasswordVisibility}
-                  style={globalStyles.eyeIcon}
-                >
-                  <Icon
-                    name={isPasswordVisible ? "eye-off" : "eye"}
-                    size={24}
-                    color="#aaa"
+      {isAuthenticated ? (
+        <View>
+          <Text style={globalStyles.title}>Already Logged In!</Text>
+          <TouchableOpacity
+            style={globalStyles.button}
+            onPress={() => router.push('/WelcomeScreen')}
+          >
+            <Text style={globalStyles.buttonText}>Go back</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View>
+          <Text style={globalStyles.title}>Login</Text>
+          <View style={globalStyles.form}>
+            <Formik
+              initialValues={{ userNameOrEmail: '', password: '' }}
+              validationSchema={memoizedValidationSchema}
+              onSubmit={(values) => handleLogin(values)}
+            >
+              {({
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                values,
+                errors,
+                touched,
+              }) => (
+                <View>
+                  <Text style={globalStyles.inputLabel}>Username or Email</Text>
+                  <TextInput
+                    style={globalStyles.input}
+                    placeholder="Username or Email"
+                    placeholderTextColor="#aaa"
+                    value={values.userNameOrEmail}
+                    onChangeText={handleChange("userNameOrEmail")}
+                    onBlur={handleBlur("userNameOrEmail")}
                   />
-                </TouchableOpacity>
-              </View>
-              {errors.password && touched.password && (
-                <Text style={globalStyles.errorText}>{errors.password}</Text>
+                  {errors.userNameOrEmail && touched.userNameOrEmail && (
+                    <Text style={globalStyles.errorText}>{errors.userNameOrEmail}</Text>
+                  )}
+
+                  <Text style={globalStyles.inputLabel}> {"\n"} Password</Text>
+                  <View>
+                    <TextInput
+                      style={globalStyles.inputWithIcon}
+                      placeholder="Password"
+                      placeholderTextColor="#aaa"
+                      secureTextEntry={!isPasswordVisible}
+                      value={values.password}
+                      onChangeText={handleChange("password")}
+                      onBlur={handleBlur("password")}
+                    />
+                    <TouchableOpacity
+                      onPress={togglePasswordVisibility}
+                      style={globalStyles.eyeIcon}
+                    >
+                      <Icon
+                        name={isPasswordVisible ? "eye-off" : "eye"}
+                        size={24}
+                        color="#aaa"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  {errors.password && touched.password && (
+                    <Text style={globalStyles.errorText}>{errors.password}</Text>
+                  )}
+
+                  <TouchableOpacity
+                    style={globalStyles.button}
+                    onPress={handleSubmit}
+                  >
+                    <Text style={globalStyles.buttonText}>Login</Text>
+                  </TouchableOpacity>
+
+                  <Text style={globalStyles.signuptext}>
+                    Don't have an account?{" "}
+                    <Text
+                      style={globalStyles.signuptext2}
+                      onPress={() => router.push("/screens/SignupScreen")}
+                    >
+                      Sign up!
+                    </Text>
+                  </Text>
+                </View>
               )}
-
-              <TouchableOpacity
-                style={globalStyles.button}
-                onPress={handleSubmit}
-              >
-                <Text style={globalStyles.buttonText}>Login</Text>
-              </TouchableOpacity>
-
-              <Text style={globalStyles.signuptext}>
-                Don't have an account?{" "}
-                <Text
-                  style={globalStyles.signuptext2}
-                  onPress={() => router.push("/screens/SignupScreen")}
-                >
-                  Sign up!
-                </Text>
-              </Text>
-            </View>
-          )}
-        </Formik>
-      </View>
-      </View>
+            </Formik>
+          </View>
+        </View>
       )}
     </ImageBackground>
   );
